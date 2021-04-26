@@ -168,3 +168,39 @@ class Order(models.Model):
 
     def __str__(self):
         return 'Заказ №%d' % (self.id)
+
+
+class LatestProductsManager:
+
+    @staticmethod
+    def get_products_for_main_page(*args, **kwargs):
+        with_respect_to = kwargs.get('with_respect_to')
+        products = list()
+
+        ct_models = ContentType.objects.filter(model__in=args)
+
+        for ct_model in ct_models:
+            model_products = ct_model.model_class()._base_manager.all().order_by('-id')[:5]
+            products.extend(model_products)
+
+        if with_respect_to and with_respect_to in args:
+            ct_models = ContentType.objects.filter(model=with_respect_to)
+            if ct_models.exists():
+                products = sorted(
+                    products, 
+                    key=lambda x: x.__class__._meta.model_name.startswith(with_respect_to), reverse=True
+                )
+
+        return products
+
+
+class LatestProducts:
+    objects = LatestProductsManager()
+
+# TODO
+# add count kwarg in get_products_for_main_page:
+# >>> LatestProducts.objects.get_products_for_main_page('notebook', 'smartphone', count=(2, 2))
+# [notebook, notebook, smartphone, smartphone]
+
+# >>> LatestProducts.objects.get_products_for_main_page('notebook', 'smartphone', count=(1, 2))
+# [notebook, smartphone, smartphone]
