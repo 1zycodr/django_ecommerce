@@ -21,6 +21,10 @@ class Category(models.Model):
 
 class Product(models.Model):
 
+    MIN_RESOLUTION = (400, 400)
+    MAX_RESOLUTION = (800, 800)
+    MAX_IMAGE_SIZE = 3145728
+
     class Meta:
         abstract = True
 
@@ -196,11 +200,3 @@ class LatestProductsManager:
 
 class LatestProducts:
     objects = LatestProductsManager()
-
-# TODO
-# add count kwarg in get_products_for_main_page:
-# >>> LatestProducts.objects.get_products_for_main_page('notebook', 'smartphone', count=(2, 2))
-# [notebook, notebook, smartphone, smartphone]
-
-# >>> LatestProducts.objects.get_products_for_main_page('notebook', 'smartphone', count=(1, 2))
-# [notebook, smartphone, smartphone]
