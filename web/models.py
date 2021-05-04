@@ -3,14 +3,13 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils import timezone
-from django.contrib import reverse
+from django.urls import reverse
 
 User = get_user_model()
 
 def get_product_url(obj, viewname):
     ct_model = obj.__class__._meta.model_name
     return reverse(viewname, kwargs={'ct_model': ct_model, 'slug': obj.slug})
-
 
 class Category(models.Model):
     
@@ -23,7 +22,6 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class Product(models.Model):
 
@@ -40,6 +38,9 @@ class Product(models.Model):
     description = models.TextField(verbose_name='Описание')
     price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена')
     image = models.ImageField(verbose_name='Изображение')
+
+    def get_url(self):
+        return get_product_url(self, 'product_detail')
 
     def __str__(self):
         return self.title
