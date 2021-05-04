@@ -3,8 +3,14 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils import timezone
+from django.urls import reverse
 
 User = get_user_model()
+
+def get_product_url(obj, viewname):
+    ct_model = obj.__class__._meta.model_name
+    return reverse(viewname, kwargs={'ct_model': ct_model, 'slug': obj.slug})
+
 
 class Category(models.Model):
     
@@ -37,6 +43,9 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_url(self):
+        return get_product_url(self, 'product_detail')
 
 
 class Notebook(Product):
@@ -124,7 +133,7 @@ class Customer(models.Model):
     user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
     phone = models.CharField(max_length=20, verbose_name='Номер телефона', null=True, blank=True)
     address = models.CharField(max_length=250, verbose_name='Адрес', null=True, blank=True)
-    orders = models.ManyToManyField('Order', verbose_name='Заказы пользователя', related_name='orders', null=True, blank=True)
+    orders = models.ManyToManyField('Order', verbose_name='Заказы пользователя', related_name='orders', blank=True)
 
     def __str__(self):
         return 'Покупатель %s %s' % (self.user.first_name, self.user.last_name)
