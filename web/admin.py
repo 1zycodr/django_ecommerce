@@ -3,7 +3,6 @@ from .models import *
 from django.forms import ModelChoiceField, ModelForm, ValidationError
 from PIL import Image
 
-
 class NotebookAdminForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -39,7 +38,28 @@ class NotebookAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
+class SmartphoneAdminForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = kwargs.get('instance')
+
+        if instance and not instance.sd:
+            self.fields['sd_volume'].widget.attrs.update({
+                'readonly': True, 'style': 'background: black;'
+            })
+
+
+    def clean(self):
+        if not self.cleaned_data['sd']:
+            self.cleaned_data['sd_volume'] = None
+        return self.cleaned_data
+
+
 class SmartphoneAdmin(admin.ModelAdmin):
+
+    change_form_template = 'admin.html'
+    form = SmartphoneAdminForm
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         print(db_field)
