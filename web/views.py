@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import DetailView, View
 from .models import *
-from .mixins import CategoryDetailMixin
+from .mixins import CategoryDetailMixin, CartMixin 
 
 class IndexView(View):
     def get(self, request, *args, **kwargs):
@@ -40,3 +40,13 @@ class CategoryDetailView(CategoryDetailMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+
+class CartView(CartMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'cart': self.cart, 
+            'categories': Category.objects.get_categories_for_left_sidebar()
+        }
+        return render(request, 'cart.html', context)

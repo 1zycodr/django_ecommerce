@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h3 class="text-center mt-5 mb-5">Корзина</h3>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Имя</th>
+                <th scope="col">Изображение</th>
+                <th scope="col">Цена за ед. товара</th>
+                <th scope="col">Количество</th>
+                <th scope="col">Общая цена</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in cart.products.all %}
+                <tr>
+                    <th scope="row">{{ product.content_object.title }}</th>
+                    <td class="w-25">
+                        <img class="img-fluid" src="{{ product.content_object.image.url }}" alt="">
+                    </td>
+                    <td>{{ product.content_object.price }} тнг.</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.final_price }} тнг.</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="2"></td>
+                <th scope="row">Итого:</th>
+                <td>{{ cart.total_products }}</td>
+                <td>{{ cart.final_price }} тнг.</td>
+            </tr>
+        </tbody>
+    </table>
+
+{% endblock %}
