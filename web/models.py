@@ -77,6 +77,8 @@ class Product(models.Model):
     def get_url(self):
         return get_product_url(self, 'product_detail')
 
+    def get_model_name(self):
+        return self.__class__.__name__.lower()
 
 class Notebook(Product):
 
@@ -152,6 +154,10 @@ class CartProduct(models.Model):
 
     def __str__(self):
         return 'Продукт %s из корзины %d' % (self.content_object.title, self.cart.id)
+
+    def save(self, *args, **kwargs):
+        self.final_price = self.quantity * self.content_object.price
+        return super().save(*args, **kwargs)    
 
 
 class Customer(models.Model):
